@@ -5,6 +5,7 @@
 echo Running $(basename "${BASH_SOURCE}")
 
 # Initialize defaults
+export vox_mm=2
 export hpf_sec=200
 export fwhm_mm=6
 export out_dir=/OUTPUTS
@@ -17,10 +18,14 @@ while [[ $# -gt 0 ]]; do
         --fmri2_niigz) export fmri2_niigz="${2}"; shift; shift ;;
         --fmri3_niigz) export fmri3_niigz="${2}"; shift; shift ;;
         --fmri4_niigz) export fmri4_niigz="${2}"; shift; shift ;;
+        --fmritopup_niigz) export fmritopup_niigz="${2}"; shift; shift ;;
+        --seg_niigz) export seg_niigz="${2}"; shift; shift ;;
+        --icv_niigz) export icv_niigz="${2}"; shift; shift ;;
         --deffwd_niigz) export deffwd_niigz="${2}"; shift; shift ;;
         --biascorr_niigz) export biascorr_niigz="${2}"; shift; shift ;;
         --biasnorm_niigz) export biasnorm_niigz="${2}"; shift; shift ;;
         --eprime_csv) export eprime_csv="${2}"; shift; shift ;;
+        --vox_mm) export vox_mm="${2}"; shift; shift ;;
         --hpf_sec) export hpf_sec="${2}"; shift; shift ;;
         --fwhm_mm) export fwhm_mm="${2}"; shift; shift ;;
         --out_dir) export out_dir="${2}"; shift; shift ;;

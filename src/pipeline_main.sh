@@ -8,8 +8,7 @@ echo Running $(basename "${BASH_SOURCE}")
 # Copy inputs to the working directory
 copy_inputs.sh
 
-# Shell script based preprocessing
-preprocessing.sh
+# FSL based motion
 
 # Matlab/SPM. Relies mostly on the coded default inputs in the matlab entrypoint
 run_spm12.sh "${MATLAB_RUNTIME}" function matlab_entrypoint \
