@@ -14,21 +14,24 @@
 cd "${out_dir}"
 
 # White matter mask from slant
+echo White matter mask
 fslmaths seg -thr 39.5 -uthr 41.5 -bin tmp
 fslmaths seg -thr 43.5 -uthr 45.5 -add tmp -bin wm
 rm tmp.nii.gz
 
 # Motion correction within run, and for the short topup series
-echo Motion correction
-for n = 1 2 3 4; do
+echo "Motion correction"
+for n in 1 2 3 4; do
+    echo "    Run ${n}"
     mcflirt -in fmri${n} -meanvol -out rfmri${n} -plots
 done
 mcflirt -in fmritopup -meanvol -out rfmritopup
 
 # Alignment between runs and overall mean fmri
+echo "Aligning runs"
 cp rfmri1_mean_reg.nii.gz rrfmri1_mean_reg.nii.gz
 opts="-usesqform -searchrx -5 5 -searchry -5 5 -searchrz -5 5"
-for n = 2 3 4; do
+for n in 2 3 4; do
     flirt ${opts} -in rfmri${n}_mean_reg -ref rrfmri1_mean_reg \
         -out rrfmri${n}_mean_reg -omat r${n}to1.mat
     flirt -applyxfm -in rfmri${n} -ref rrfmri1_mean_reg -out rrfmri${n}
@@ -40,11 +43,11 @@ fslmaths rrfmri1_mean_reg -add rrfmri2_mean_reg \
 
 # Run topup. After this, the 'tr' prefix files always contain the data that will be further
 # processed.
-echo Running TOPUP
+echo "Running TOPUP"
 run_topup.sh "${pedir}" rrfmri_mean_all rrfmritopup_mean_reg rrfmri1 rrfmri2 rrfmri3 rrfmri4
 
 # Register corrected mean fmri to T1
-echo Coregistration
+echo "Coregistration"
 epi_reg --epi=trrfmri_mean_all --t1=t1 --t1brain=t1brain --wmseg=wm --out=ctrrfmri_mean_all
 
 # Use flirt to resample to the desired voxel size, overwriting epi_reg output image
