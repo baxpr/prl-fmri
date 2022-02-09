@@ -1,24 +1,41 @@
 function matlab_main(inp)
 
-% Matlab processing would go here. This example just shows two ways of
-% using SPM12 to display an image and print the resulting window. Note that
-% uicontrols do not appear on the printed figure this way - an additional
-% argument in favor of making QA PDFs in freeview later, instead.
+hpf_sec = str2double(inp.hpf_sec);
+fwhm_mm = str2double(inp.fwhm_mm);
 
-% Convert the numerical parameter from string - matlab executables called
-% from the command line have string arguments only.
-param = str2double(inp.parameter_val);
-
-% Use the batch facility
 clear matlabbatch
-matlabbatch{1}.spm.util.disp.data = {inp.img_nii};
-matlabbatch{2}.spm.util.print.fname = fullfile(inp.out_dir,'batchfigure.pdf');
-matlabbatch{2}.spm.util.print.fig.figname = 'Graphics';
-matlabbatch{2}.spm.util.print.opts = 'pdf';
-spm_jobman('run',matlabbatch);
 
-% Use SPM functions directly
-spm_image('Display',inp.img_nii);
-spm_orthviews('Caption',1,sprintf('%s. Par=%0.2f',inp.label_info,param));
-spm_print(fullfile(inp.out_dir,'funcfigure.pdf'),'Graphics','pdf');
+% Realign
+% Coregister to T1
+% Apply cat12 warp
+% Smooth
+% First level stats
+%   Model T1_TrialStart, T2b_CardFlipOnset
+%     (1) WinStay, WinSwitch, Lose   x   Easy, Hard
+%     (2) Win, Lose                  x   Easy, Hard
+% Create contrast images
+
+
+% Realign four sessions and create mean fmri image. Creates four param
+% files rp_fmri?.txt, and meanfmri1.nii
+matlabbatch{1}.spm.spatial.realign.estwrite.data = {
+	{inp.fmri1_nii}
+	{inp.fmri2_nii}
+	{inp.fmri3_nii}
+	{inp.fmri4_nii}
+	}';
+matlabbatch{1}.spm.spatial.realign.estwrite.eoptions.quality = 0.9;
+matlabbatch{1}.spm.spatial.realign.estwrite.eoptions.sep = 4;
+matlabbatch{1}.spm.spatial.realign.estwrite.eoptions.fwhm = 5;
+matlabbatch{1}.spm.spatial.realign.estwrite.eoptions.rtm = 1;
+matlabbatch{1}.spm.spatial.realign.estwrite.eoptions.interp = 2;
+matlabbatch{1}.spm.spatial.realign.estwrite.eoptions.wrap = [0 0 0];
+matlabbatch{1}.spm.spatial.realign.estwrite.eoptions.weight = '';
+matlabbatch{1}.spm.spatial.realign.estwrite.roptions.which = [0 1];
+matlabbatch{1}.spm.spatial.realign.estwrite.roptions.interp = 1;
+matlabbatch{1}.spm.spatial.realign.estwrite.roptions.wrap = [0 0 0];
+matlabbatch{1}.spm.spatial.realign.estwrite.roptions.mask = 0;
+matlabbatch{1}.spm.spatial.realign.estwrite.roptions.prefix = 'r';
+
+spm_jobman('run',matlabbatch)
 

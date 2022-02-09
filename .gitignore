@@ -9,3 +9,4 @@ external
 local*
 freesurfer_license.txt
 matlab/bin/spm12_mcr
+spm_*.ps
