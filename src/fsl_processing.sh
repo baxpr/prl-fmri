@@ -25,6 +25,7 @@ for n in 1 2 3 4; do
     echo "    Run ${n}"
     mcflirt -in fmri${n} -meanvol -out rfmri${n} -plots
 done
+echo "    Topup run"
 mcflirt -in fmritopup -meanvol -out rfmritopup
 
 # Alignment between runs and overall mean fmri
@@ -32,11 +33,14 @@ echo "Aligning runs"
 cp rfmri1_mean_reg.nii.gz rrfmri1_mean_reg.nii.gz
 opts="-usesqform -searchrx -5 5 -searchry -5 5 -searchrz -5 5"
 for n in 2 3 4; do
+    echo "    Run ${n} to run 1"
     flirt ${opts} -in rfmri${n}_mean_reg -ref rrfmri1_mean_reg \
         -out rrfmri${n}_mean_reg -omat r${n}to1.mat
     flirt -applyxfm -in rfmri${n} -ref rrfmri1_mean_reg -out rrfmri${n}
 done
+echo "    Topup run to run 1"
 flirt ${opts} -in rfmritopup_mean_reg -ref rrfmri1_mean_reg -out rrfmritopup_mean_reg
+echo "    Computing overall mean"
 fslmaths rrfmri1_mean_reg -add rrfmri2_mean_reg \
     -add rrfmri3_mean_reg -add rrfmri4_mean_reg \
     -div 4 rrfmri_mean_all
