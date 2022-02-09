@@ -11,12 +11,10 @@ copy_inputs.sh
 # Shell script based preprocessing
 preprocessing.sh
 
-# Matlab/SPM
+# Matlab/SPM. Relies mostly on the coded default inputs in the matlab entrypoint
 run_spm12.sh "${MATLAB_RUNTIME}" function matlab_entrypoint \
-    img_nii "${out_dir}"/img.nii \
-    parameter_val "${parameter_val}" \
-    label_info "${label_info}" \
-    out_dir "${out_dir}"
+    hpf_sec "${hpf_sec}" \
+    fwhm_mm "${fwhm_mm}"
 
 # Postprocessing
 postprocessing.sh
