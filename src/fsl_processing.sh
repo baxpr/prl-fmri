@@ -17,8 +17,9 @@
 #    fmritopup.nii.gz    fMRI with reversed phase encoding direction
 #
 # Results are
-#    ctrrfmri_mean_all.nii.gz    Mean of fMRIs, topup'd and registered to T1
-#    ctrrfmri?.nii.gz            Topup'd and registered fMRI time series
+#    ctrrfmri_mean_all.nii.gz        Mean of fMRIs, topup'd and registered to T1
+#    ctrrfmri?.nii.gz                Topup'd and registered fMRI time series
+#    ctrrfmritopup_mean_reg.nii.gz   Mean rev phase enc fMRI after topup/reg
 
 # Get in working dir
 cd "${out_dir}"
@@ -80,4 +81,8 @@ for n in 1 2 3 4; do
     flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.mat \
         -in trrfmri${n} -ref biascorr -out ctrrfmri${n}
 done
+
+# And to the topup image, for reference
+flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.mat \
+    -in trrfmritopup_mean_reg -ref biascorr -out ctrrfmritopup_mean_reg
 
