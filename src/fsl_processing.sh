@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
 #
-# Motion correction, topup, and registration to T1 for an fMRI time series 
+# Motion correction, topup, and registration to T1 for 4 fMRI time series 
 # with a matched time series or volume acquired with reverse phase encoding
-# direction. Optionally, skip the topup step if the reverse phase encoded
-# images aren't available.
+# direction.
 #
-# Relies on env vars exported from pipeline.sh to get arguments:
+# Relies on env vars exported from pipeline_entrypoint.sh to get arguments:
 #    out_dir
 #    pedir
 #    vox_mm
 #
+# Assumed filenames in $out_dir are
+#    seg.nii.gz          Multiatlas/slant segmentation result
+#    biascorr.nii.gz     CAT12 bias-corrected T1 in native space
+#    icv.nii.gz          T1 masked to brain only
+#    fmri?.nii.gz        fMRI time series 1-4
+#    fmritopup.nii.gz    fMRI with reversed phase encoding direction
+#
 # Results are
-#    ctrrfmri_mean_all.nii.gz    Mean of mean fmris, topup-corrected and registered with T1
-#    ctrrfmri?.nii.gz            The corrected and registered fMRI time series
+#    ctrrfmri_mean_all.nii.gz    Mean of fMRIs, topup'd and registered to T1
+#    ctrrfmri?.nii.gz            Topup'd and registered fMRI time series
 
 # Get in working dir
 cd "${out_dir}"
@@ -74,37 +80,4 @@ for n in 1 2 3 4; do
     flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.mat \
         -in trrfmri${n} -ref biascorr -out ctrrfmri${n}
 done
-
-
-
-# FIXME we are here
-exit 0
-
-
-
-
-
-# Give things more meaningful filenames
-mv ctrrfmri_mean_all.nii.gz coregistered_mean_fmri.nii.gz
-
-
-
-mv ctrrfmri_mean_all.mat corrected_fmri_to_t1.mat
-
-
-mv trfwd_mean_reg.nii.gz mean_fmriFWD.nii.gz
-
-mv ctrfwd.nii.gz coregistered_fmriFWD.nii.gz
-
-mv rfwd_mean_reg.nii.gz mean_fmriFWD_no_topup.nii.gz
-mv crfwd_mean_reg.nii.gz coregistered_mean_fmriFWD_no_topup.nii.gz
-mv crfwd_mean_reg.mat  mean_fmriFWD_no_topup_to_t1.mat
-
-if [[ "${run_topup}" == "yes" ]] ; then
-	mv trrev_mean_reg.nii.gz mean_fmriREV.nii.gz
-	mv ctrrev_mean_reg.nii.gz coregistered_mean_fmriREV.nii.gz
-	mv rrev_mean_reg.nii.gz mean_fmriREV_no_topup.nii.gz
-	mv crrev_mean_reg.nii.gz coregistered_mean_fmriREV_no_topup.nii.gz
-	mv crrev_mean_reg.mat  mean_fmriREV_no_topup_to_t1.mat
-fi
 
