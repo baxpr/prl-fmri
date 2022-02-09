@@ -9,6 +9,10 @@
 #    out_dir
 #    pedir
 #    vox_mm
+#
+# Results are
+#    ctrrfmri_mean_all.nii.gz    Mean of mean fmris, topup-corrected and registered with T1
+#    ctrrfmri?.nii.gz            The corrected and registered fMRI time series
 
 # Get in working dir
 cd "${out_dir}"
@@ -68,7 +72,7 @@ flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.mat -in trrfmri_mean_all 
 # Apply coregistration to the corrected time series
 for n in 1 2 3 4; do
     flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.mat \
-        -in rrfmri${n} -ref t1 -out crrfmri${n}
+        -in trrfmri${n} -ref biascorr -out ctrrfmri${n}
 done
 
 
@@ -76,8 +80,15 @@ done
 # FIXME we are here
 exit 0
 
+
+
+
+
 # Give things more meaningful filenames
 mv ctrrfmri_mean_all.nii.gz coregistered_mean_fmri.nii.gz
+
+
+
 mv ctrrfmri_mean_all.mat corrected_fmri_to_t1.mat
 
 
