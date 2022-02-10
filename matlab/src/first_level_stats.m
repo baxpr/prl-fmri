@@ -26,7 +26,7 @@ fprintf('ALERT: USING TR OF %0.3f sec FROM FMRI NIFTI\n',tr)
 
 
 %% Win vs Lose design and estimate
-%   T1_TrialStart, T2b_CardFlipOnset   x   Win, Lose
+%   T1_TrialStart, T3_FeedbackOnset   x   Win, Lose
 clear matlabbatch
 matlabbatch{1}.spm.stats.fmri_spec.dir = ...
 	{fullfile(inp.out_dir,'spm_stayswitchlose')};
@@ -60,9 +60,9 @@ for r = 1:4
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 1;
 	
 	c = c + 1;
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Win_CardFlip';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Win_Feedback';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
-		thist.T2b_CardFlipOnset_fMRIsec(ismember(thist.Outcome,'Win'));
+		thist.T3_FeedbackOnset(ismember(thist.Outcome,'Win'));
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod = ...
@@ -82,9 +82,9 @@ for r = 1:4
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 1;
 	
 	c = c + 1;
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Lose_CardFlip';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Lose_Feedback';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
-		thist.T2b_CardFlipOnset_fMRIsec(ismember(thist.Outcome,'Lose'));
+		thist.T3_FeedbackOnset(ismember(thist.Outcome,'Lose'));
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod = ...
