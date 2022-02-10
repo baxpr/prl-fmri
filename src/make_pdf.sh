@@ -1,53 +1,99 @@
 #!/usr/bin/env bash
-#
-# Show the image, annotated
 
-echo Running $(basename "${BASH_SOURCE}")
+echo Making PDF
 
-thedate=$(date)
+# FSL init
+PATH=${FSLDIR}/bin:${PATH}
+. ${FSLDIR}/etc/fslconf/fsl.sh
 
 # Work in output directory
 cd ${out_dir}
 
-# Find center of mass of the mask image, using a custom matlab function
-run_spm12.sh ${MATLAB_RUNTIME} function ctr_of_mass mask.nii 0 yes com.txt
-com=$(cat com.txt)
-rm com.txt
-XYZ=(${com// / })
+# Get some info from the matlab part
+source matlab_envvars.sh
 
-# Axial slices to show, relative to COM in mm
-for sl in -040 -030 -020 -010 000 010 020 030 040 050 060; do
+# Timestamp
+thedate=$(date)
 
-    Z=$(echo "${XYZ[2]} + ${sl}" | bc -l)
-    echo "Slice ${sl} at ${XYZ[@]}"
+# EPI-to-T1 coregistration, native space, near WM COM
+com=( $(fslstats wm -c) )
+com[0]=$(echo ${com[0]} + 10 | bc)
+fsleyes render -of coreg.png \
+	--scene ortho --worldLoc ${com[@]} --displaySpace world --size 1800 600 --xzoom 1000 --yzoom 1000 --zzoom 1000 \
+	--layout horizontal --hideCursor \
+	coregistered_mean_fmriFWD --overlayType volume \
+	gm --overlayType label --outline --outlineWidth 2 --lut harvard-oxford-subcortical
+#	wm --overlayType label --outline --outlineWidth 2 --lut harvard-oxford-subcortical \
 
-	freeview \
-	  -v img.nii \
-	  -v mask.nii:colormap=lut:outline=yes \
-	  -viewsize 800 800 --layout 1 --zoom 1.2 --viewport axial \
-	  -ras ${XYZ[0]} ${XYZ[1]} ${Z} \
-	  -ss slice_${sl}.png
 
+# EPI normalization, MNI space
+fslmaths ${FSLDIR}/data/standard/tissuepriors/avg152T1_gray -thr 100 -bin gm_mni
+fsleyes render -of mni.png \
+	--scene ortho --worldLoc 10 -20 0 --displaySpace world --size 1800 600 --xzoom 600 --yzoom 600 --zzoom 600 \
+	--layout horizontal --hideCursor \
+	wmeanfmri --overlayType volume \
+	gm_mni --overlayType label --outline --outlineWidth 2 --lut harvard-oxford-subcortical
+
+
+# fMRI contrast image, slices
+c=10
+for slice in -35 -20 -5 10 25 40 55 70  ; do
+	((c++))
+	fsleyes render -of ax_${c}.png \
+		--scene ortho --worldLoc 0 0 ${slice} --displaySpace world --size 600 600 --yzoom 1000 \
+		--layout horizontal --hideCursor --hideLabels --hidex --hidey \
+		wmt1 --overlayType volume \
+		SPM/spmT_000${CONTRAST} --overlayType volume --displayRange 3 10 \
+		--useNegativeCmap --cmap red-yellow --negativeCmap blue-lightblue
 done
 
-# Combine slices into single image. A 'clever' trick to get the images
-# in the right order on the page
-montage -mode concatenate slice_-0{4,3,2,1}*.png slice_0*.png \
-    -tile 3x4 -quality 100 -background black -gravity center \
-    -border 20 -bordercolor black page1.png
 
-# Rescale to fit the page, and add annotations
-convert \
-    -size 2250x3000 xc:white -density 300 \
-    -gravity center \( page1.png -resize 2000x \) -composite \
-    -gravity North -pointsize 12 -annotate +0+100 \
-    "Mask shown on input image" \
-    -gravity SouthEast -pointsize 12 -annotate +100+100 "${thedate}" \
-    -gravity NorthWest -pointsize 12 -annotate +100+200 "${label_info}" \
-    page1.png
+# README and methods info
+cat <<- EOF > params.txt
+	FMRI ANALYSIS PIPELINE gf-fmri for task $task, $thedate
+	
+	$project $subject $session $scan
 
-# Combine with saved images from Matlab/SPM to make a single PDF
-convert page1.png batchfigure*.pdf funcfigure*.pdf demo.pdf
+	Main fMRI $(basename $fmriFWD_niigz), RPE TOPUP fMRI $(basename $fmriREV_niigz)
+	Phase encoding direction is $pedir, topup is $run_topup
+	Output voxel $vox_mm mm, smoothing kernel $fwhm mm fwhm, high pass filter $hpf sec
+	
+	
+EOF
+cat params.txt /opt/gf-fmri/README.md > readme.txt
+${magick_dir}/convert -size 2600x3365 xc:white -pointsize 32 -font Courier -fill black \
+	-annotate +100+100 "@readme.txt" readme.png
 
-# Clean up
-rm page1.png batchfigure_*.pdf funcfigure_*.pdf
+# Combine
+${magick_dir}/montage \
+	-mode concatenate ax_*.png \
+	-tile 3x -trim -quality 100 -background black -gravity center \
+	-border 20 -bordercolor black page_ax.png
+
+info_string="$project $subject $session $scan"
+
+${magick_dir}/convert -size 2600x3365 xc:white \
+	-gravity center \( coreg.png -geometry '2400x2400+0-0' \) -composite \
+	-gravity center -pointsize 48 -annotate +0-1250 \
+	"T1 gray matter outline on unsmoothed registered mean fMRI (native space)" \
+	-gravity center \( mni.png -geometry '2400x2400+0+1200' \) -composite \
+	-gravity center -pointsize 48 -annotate +0-50 \
+	"Atlas gray matter outline on unsmoothed warped mean fMRI (atlas space)" \
+	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
+	page_reg.png
+
+${magick_dir}/convert -size 2600x3365 xc:white \
+	-gravity center \( page_ax.png -resize 2400x \) -composite \
+	-gravity North -pointsize 48 -annotate +0+100 \
+	"$TASK fMRI results, $CONNAME" \
+	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
+	-gravity NorthWest -pointsize 48 -annotate +100+200 "${info_string}" \
+	page_ax.png
+
+${magick_dir}/convert -size 2600x3365 xc:white \
+	-gravity center \( first_level_design_001.png -resize 2400x \) -composite \
+	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
+	first_level_design_001.png
+
+${magick_dir}/convert readme.png page_reg.png page_ax.png first_level_design_001.png gf-fmri.pdf
+
