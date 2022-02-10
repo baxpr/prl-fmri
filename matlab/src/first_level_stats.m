@@ -29,7 +29,7 @@ fprintf('ALERT: USING TR OF %0.3f sec FROM FMRI NIFTI\n',tr)
 %   T1_TrialStart, T3_FeedbackOnset   x   Win, Lose
 clear matlabbatch
 matlabbatch{1}.spm.stats.fmri_spec.dir = ...
-	{fullfile(inp.out_dir,'spm_stayswitchlose')};
+	{fullfile(inp.out_dir,'spm_winlose')};
 matlabbatch{1}.spm.stats.fmri_spec.timing.units = 'secs';
 matlabbatch{1}.spm.stats.fmri_spec.timing.RT = tr;
 matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16;
@@ -62,7 +62,7 @@ for r = 1:4
 	c = c + 1;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Win_Feedback';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
-		thist.T3_FeedbackOnset(ismember(thist.Outcome,'Win'));
+		thist.T3_FeedbackOnset_fMRIsec(ismember(thist.Outcome,'Win'));
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod = ...
@@ -84,7 +84,7 @@ for r = 1:4
 	c = c + 1;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Lose_Feedback';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
-		thist.T3_FeedbackOnset(ismember(thist.Outcome,'Lose'));
+		thist.T3_FeedbackOnset_fMRIsec(ismember(thist.Outcome,'Lose'));
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod = ...
