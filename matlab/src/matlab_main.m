@@ -37,7 +37,7 @@ clear matlabbatch
 matlabbatch{1}.spm.spatial.smooth.data = {
 	inp.wfmri1_nii
 	inp.wfmri2_nii
-	inp.wfmri4_nii
+	inp.wfmri3_nii
 	inp.wfmri4_nii
 	};
 matlabbatch{1}.spm.spatial.smooth.fwhm = [fwhm_mm fwhm_mm fwhm_mm];
