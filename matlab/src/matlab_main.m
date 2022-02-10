@@ -57,6 +57,7 @@ inp.swfmri3_nii = fullfile(inp.out_dir,['s' n e]);
 inp.swfmri4_nii = fullfile(inp.out_dir,['s' n e]);
 
 % First level stats
+save(fullfile(inp.out_dir,'testvars.mat'),'inp');  % temporary for testing
 first_level_stats(inp);
 
 
