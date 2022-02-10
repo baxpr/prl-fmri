@@ -1,9 +1,5 @@
 function first_level_stats(inp)
 
-%   Model T1_TrialStart, T2b_CardFlipOnset
-%     (1) WinStay, WinSwitch, Lose   x   Easy, Hard
-%     (2) Win, Lose                  x   Easy, Hard
-
 % Filter param
 hpf_sec = str2double(inp.hpf_sec);
 
@@ -30,6 +26,7 @@ fprintf('ALERT: USING TR OF %0.3f sec FROM FMRI NIFTI\n',tr)
 
 
 %% Win vs Lose design and estimate
+%   T1_TrialStart, T2b_CardFlipOnset   x   Win, Lose
 clear matlabbatch
 matlabbatch{1}.spm.stats.fmri_spec.dir = ...
 	{fullfile(inp.out_dir,'spm_stayswitchlose')};
