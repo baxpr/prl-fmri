@@ -13,4 +13,4 @@ cp "${icv_niigz}" "${out_dir}"/icv.nii.gz
 cp "${deffwd_niigz}" "${out_dir}"/y_deffwd.nii.gz
 cp "${biascorr_niigz}" "${out_dir}"/biascorr.nii.gz
 cp "${biasnorm_niigz}" "${out_dir}"/biasnorm.nii.gz
-cp "${eprime_csv}" "${out_dir}"/eprime.csv
+cp "${trialreport_csv}" "${out_dir}"/trialreport.csv

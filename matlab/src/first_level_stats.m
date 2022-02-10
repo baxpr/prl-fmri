@@ -6,6 +6,10 @@ function first_level_stats(inp)
 
 % Load motion params
 for r = 1:4
-	mots{r} = readtable(inp.(['motpar' num2str(r) '_txt']));
+	tmp = readtable(inp.(['motpar' num2str(r) '_txt']),'FileType','text');
+	mots{r} = zscore(table2array(tmp));
 end
+
+% Load trial timing info
+ep = readtable(inp.trialreport_csv);
 

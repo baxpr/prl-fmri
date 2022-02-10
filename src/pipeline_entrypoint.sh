@@ -26,7 +26,7 @@ while [[ $# -gt 0 ]]; do
         --deffwd_niigz) export deffwd_niigz="${2}"; shift; shift ;;
         --biascorr_niigz) export biascorr_niigz="${2}"; shift; shift ;;
         --biasnorm_niigz) export biasnorm_niigz="${2}"; shift; shift ;;
-        --eprime_csv) export eprime_csv="${2}"; shift; shift ;;
+        --trialreport_csv) export trialreport_csv="${2}"; shift; shift ;;
         --vox_mm) export vox_mm="${2}"; shift; shift ;;
         --hpf_sec) export hpf_sec="${2}"; shift; shift ;;
         --fwhm_mm) export fwhm_mm="${2}"; shift; shift ;;
