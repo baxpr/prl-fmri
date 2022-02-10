@@ -13,6 +13,7 @@ fsl_processing.sh
 
 # Matlab/SPM for first level stats. Unzip .nii first
 gunzip "${out_dir}"/ctrrfmri?.nii.gz \
+    "${out_dir}"/ctrrfmri_mean_all.nii.gz \
     "${out_dir}"/biasnorm.nii.gz \
     "${out_dir}"/y_deffwd.nii.gz
 run_spm12.sh "${MATLAB_RUNTIME}" function matlab_entrypoint \

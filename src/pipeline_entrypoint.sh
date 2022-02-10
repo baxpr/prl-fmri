@@ -8,6 +8,7 @@ echo Running $(basename "${BASH_SOURCE}")
 export vox_mm=2
 export hpf_sec=200
 export fwhm_mm=6
+export refimg_nii=avg152T1.nii
 export out_dir=/OUTPUTS
 
 # Parse input options
@@ -21,6 +22,7 @@ while [[ $# -gt 0 ]]; do
         --fmritopup_niigz) export fmritopup_niigz="${2}"; shift; shift ;;
         --seg_niigz) export seg_niigz="${2}"; shift; shift ;;
         --icv_niigz) export icv_niigz="${2}"; shift; shift ;;
+        --refimg_nii) export refimg_nii="${2}"; shift; shift ;;
         --deffwd_niigz) export deffwd_niigz="${2}"; shift; shift ;;
         --biascorr_niigz) export biascorr_niigz="${2}"; shift; shift ;;
         --biasnorm_niigz) export biasnorm_niigz="${2}"; shift; shift ;;
