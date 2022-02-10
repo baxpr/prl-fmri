@@ -1,10 +1,5 @@
 function matlab_main(inp)
 
-hpf_sec = str2double(inp.hpf_sec);
-fwhm_mm = str2double(inp.fwhm_mm);
-
-clear matlabbatch
-
 % Apply cat12 warp
 disp('Warp')
 clear job
@@ -37,6 +32,7 @@ inp.wmeanfmri_nii = fullfile(inp.out_dir,['w' n e]);
 
 % Smooth warped fmri timeseries
 disp('Smoothing')
+fwhm_mm = str2double(inp.fwhm_mm);
 clear matlabbatch
 matlabbatch{1}.spm.spatial.smooth.data = {
 	inp.wfmri1_nii
@@ -44,7 +40,7 @@ matlabbatch{1}.spm.spatial.smooth.data = {
 	inp.wfmri4_nii
 	inp.wfmri4_nii
 	};
-matlabbatch{1}.spm.spatial.smooth.fwhm = [inp.fwhm_mm inp.fwhm_mm inp.fwhm_mm];
+matlabbatch{1}.spm.spatial.smooth.fwhm = [fwhm_mm fwhm_mm fwhm_mm];
 matlabbatch{1}.spm.spatial.smooth.dtype = 0;
 matlabbatch{1}.spm.spatial.smooth.im = 0;
 matlabbatch{1}.spm.spatial.smooth.prefix = 's';
