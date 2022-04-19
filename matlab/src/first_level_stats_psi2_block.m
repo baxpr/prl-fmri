@@ -57,35 +57,35 @@ matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
 for r = 1:4
 	
 	thist = trials(trials.Run==r,:);
-	ind = ismember(D.Outcome,{'Win','Lose'});
+	ind = ismember(thist.Outcome,{'Win','Lose'});
 	c = 0;
 	
 	% Block for start-to-feedback with (psi2-2) modulator
 	c = c + 1;
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).name = 'Trial';
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).onset = ...
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Trial';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
 		thist.T1_TrialStart_fMRIsec(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).duration = ...
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = ...
 		thist.T1_T3_Duration_fMRIsec(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).tmod = [];
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).pmod(1) = ...
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = ...
 		struct('name','psi2','param',thist.traj_psi_2(ind)-2,'poly',1);
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).orth = 0;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
 
 	% Feedback event with win/lose modulator
 	c = c + 1;
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).name = 'Feedback';
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).onset = ...
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Feedback';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
 		thist.T3_FeedbackOnset_fMRIsec(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).duration = 1;
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).tmod = [];
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).pmod(1) = ...
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 1;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = ...
 		struct( ...
 		'name','Lose', ...
 		'param',double(strcmp(thist.Outcome(ind),'Lose')), ...
 		'poly',1 ...
 		);
-	matlabbatch{1}.spm.stats.fmri_spec.sess.cond(c).orth = 0;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
 
 	% Other session-specific regressors and params
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi = {''};
