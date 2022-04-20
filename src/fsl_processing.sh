@@ -24,6 +24,15 @@
 # Get in working dir
 cd "${out_dir}"
 
+# Gray matter mask from slant
+fslmaths seg -thr  3.5 -uthr  4.5 -bin -mul -1 -add 1 -mul seg tmp
+fslmaths tmp -thr 10.5 -uthr 11.5 -bin -mul -1 -add 1 -mul tmp tmp
+fslmaths tmp -thr 39.5 -uthr 41.5 -bin -mul -1 -add 1 -mul tmp tmp
+fslmaths tmp -thr 43.5 -uthr 45.5 -bin -mul -1 -add 1 -mul tmp tmp
+fslmaths tmp -thr 48.5 -uthr 52.5 -bin -mul -1 -add 1 -mul tmp tmp
+fslmaths tmp -bin gm
+rm tmp.nii.gz
+
 # White matter mask from slant
 echo "White matter mask"
 fslmaths seg -thr 39.5 -uthr 41.5 -bin tmp

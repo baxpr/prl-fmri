@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# FIXME Get gm, MNI gm from cat12
-
 echo Making PDF
 
 # Work in output directory
