@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
 
-echo Making PDF
+# FIXME Get gm, MNI gm from cat12
+# FIXME Get contrast name (currently $CONNAME)
 
-# FSL init
-PATH=${FSLDIR}/bin:${PATH}
-. ${FSLDIR}/etc/fslconf/fsl.sh
+echo Making PDF
 
 # Work in output directory
 cd ${out_dir}
-
-# Get some info from the matlab part
-source matlab_envvars.sh
 
 # Timestamp
 thedate=$(date)
@@ -21,9 +17,8 @@ com[0]=$(echo ${com[0]} + 10 | bc)
 fsleyes render -of coreg.png \
 	--scene ortho --worldLoc ${com[@]} --displaySpace world --size 1800 600 --xzoom 1000 --yzoom 1000 --zzoom 1000 \
 	--layout horizontal --hideCursor \
-	coregistered_mean_fmriFWD --overlayType volume \
+	ctrrfmri_mean_all --overlayType volume \
 	gm --overlayType label --outline --outlineWidth 2 --lut harvard-oxford-subcortical
-#	wm --overlayType label --outline --outlineWidth 2 --lut harvard-oxford-subcortical \
 
 
 # EPI normalization, MNI space
@@ -31,7 +26,7 @@ fslmaths ${FSLDIR}/data/standard/tissuepriors/avg152T1_gray -thr 100 -bin gm_mni
 fsleyes render -of mni.png \
 	--scene ortho --worldLoc 10 -20 0 --displaySpace world --size 1800 600 --xzoom 600 --yzoom 600 --zzoom 600 \
 	--layout horizontal --hideCursor \
-	wmeanfmri --overlayType volume \
+	wctrrfmri_mean_all --overlayType volume \
 	gm_mni --overlayType label --outline --outlineWidth 2 --lut harvard-oxford-subcortical
 
 
@@ -42,35 +37,17 @@ for slice in -35 -20 -5 10 25 40 55 70  ; do
 	fsleyes render -of ax_${c}.png \
 		--scene ortho --worldLoc 0 0 ${slice} --displaySpace world --size 600 600 --yzoom 1000 \
 		--layout horizontal --hideCursor --hideLabels --hidex --hidey \
-		wmt1 --overlayType volume \
-		SPM/spmT_000${CONTRAST} --overlayType volume --displayRange 3 10 \
+		biasnorm --overlayType volume \
+		SPM/spmT_0002 --overlayType volume --displayRange 3 10 \
 		--useNegativeCmap --cmap red-yellow --negativeCmap blue-lightblue
 done
 
-
-# README and methods info
-cat <<- EOF > params.txt
-	FMRI ANALYSIS PIPELINE gf-fmri for task $task, $thedate
-	
-	$project $subject $session $scan
-
-	Main fMRI $(basename $fmriFWD_niigz), RPE TOPUP fMRI $(basename $fmriREV_niigz)
-	Phase encoding direction is $pedir, topup is $run_topup
-	Output voxel $vox_mm mm, smoothing kernel $fwhm mm fwhm, high pass filter $hpf sec
-	
-	
-EOF
-cat params.txt /opt/gf-fmri/README.md > readme.txt
-${magick_dir}/convert -size 2600x3365 xc:white -pointsize 32 -font Courier -fill black \
-	-annotate +100+100 "@readme.txt" readme.png
 
 # Combine
 ${magick_dir}/montage \
 	-mode concatenate ax_*.png \
 	-tile 3x -trim -quality 100 -background black -gravity center \
 	-border 20 -bordercolor black page_ax.png
-
-info_string="$project $subject $session $scan"
 
 ${magick_dir}/convert -size 2600x3365 xc:white \
 	-gravity center \( coreg.png -geometry '2400x2400+0-0' \) -composite \
@@ -85,9 +62,8 @@ ${magick_dir}/convert -size 2600x3365 xc:white \
 ${magick_dir}/convert -size 2600x3365 xc:white \
 	-gravity center \( page_ax.png -resize 2400x \) -composite \
 	-gravity North -pointsize 48 -annotate +0+100 \
-	"$TASK fMRI results, $CONNAME" \
+	"PRL fMRI results, $CONNAME" \
 	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
-	-gravity NorthWest -pointsize 48 -annotate +100+200 "${info_string}" \
 	page_ax.png
 
 ${magick_dir}/convert -size 2600x3365 xc:white \
@@ -95,5 +71,5 @@ ${magick_dir}/convert -size 2600x3365 xc:white \
 	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
 	first_level_design_001.png
 
-${magick_dir}/convert readme.png page_reg.png page_ax.png first_level_design_001.png gf-fmri.pdf
+${magick_dir}/convert page_reg.png page_ax.png first_level_design_001.png prl-fmri.pdf
 

@@ -71,6 +71,7 @@ run_topup.sh "${pedir}" rrfmri_mean_all rrfmritopup_mean_reg rrfmri1 rrfmri2 rrf
 # ICV_NATIVE resource from cat12 that is masked to only brain.
 echo "Coregistration"
 epi_reg --epi=trrfmri_mean_all --t1=biascorr --t1brain=icv --wmseg=wm --out=ctrrfmri_mean_all
+mv ctrrfmri_mean_all.mat ctrrfmri_mean_all.fslmat
 
 # Use flirt to resample to the desired voxel size, overwriting epi_reg output image
 flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.fslmat -in trrfmri_mean_all \
