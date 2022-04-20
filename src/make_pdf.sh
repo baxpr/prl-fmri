@@ -8,6 +8,7 @@ cd ${out_dir}
 # Timestamp
 thedate=$(date)
 
+
 # EPI-to-T1 coregistration, native space, near WM COM
 com=( $(fslstats wm -c) )
 com[0]=$(echo ${com[0]} + 10 | bc)
