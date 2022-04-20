@@ -14,9 +14,9 @@ addOptional(P,'meanfmri_nii','/OUTPUTS/ctrrfmri_mean_all.nii')
 addOptional(P,'deffwd_nii','/OUTPUTS/y_deffwd.nii')
 addOptional(P,'refimg_nii','avg152T1.nii')
 addOptional(P,'biasnorm_nii','/OUTPUTS/biasnorm.nii')
-addOptional(P,'eprime_csv','/OUTPUTS/eprime.csv')
+addOptional(P,'trialreport_csv','/OUTPUTS/trialreport.csv')
 addOptional(P,'hpf_sec','200')
-addOptional(P,'fwhm_mm','6')
+addOptional(P,'fwhm_mm','5')
 addOptional(P,'out_dir','/OUTPUTS');
 parse(P,varargin{:});
 disp(P.Results)

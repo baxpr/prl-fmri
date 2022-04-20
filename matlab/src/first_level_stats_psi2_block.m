@@ -29,14 +29,14 @@ end
 fprintf('ALERT: USING TR OF %0.3f sec FROM FMRI NIFTI\n',tr)
 
 
-%% Design and estimate
+%% Design
 % 1. Cue-to-feedback block, all trials. Interpreted as the mean BOLD
 %      response between cue and feedback, relative to baseline, at psi2 = 2.
 % 2. Parametric response proportional to (psi2 - 2) for cue-to-feedback
 %      block. Interpreted as additional BOLD response linear with psi2 when
 %      psi2 is not = 2.
 % 3. Event response to feedback, all trials. Interpreted as the response to
-%      feedback for Win trials, relative to baseline. 
+%      feedback for Win trials, relative to baseline.
 % 4. Additional response beyond 3 to Lose trials. Interpreted as the
 %      difference in BOLD response between Lose and Win trials.
 clear matlabbatch
@@ -56,11 +56,24 @@ matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
 
 for r = 1:4
 	
+	% Initialize
 	thist = trials(trials.Run==r,:);
 	ind = ismember(thist.Outcome,{'Win','Lose'});
+	ind_win = ismember(thist.Outcome,{'Win'});
+	ind_lose = ismember(thist.Outcome,{'Lose'});
 	c = 0;
 	
-	% Block for start-to-feedback with (psi2-2) modulator
+	% Session-specific scans, regressors, params
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).scans = ...
+		{inp.(['swfmri' num2str(r) '_nii'])};
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi = {''};
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).regress = ...
+		struct('name', {}, 'val', {});
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi_reg = ...
+		{fullfile(inp.out_dir,['motpar' num2str(r) '.txt'])};
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).hpf = hpf_sec;
+	
+	% Condition: block for start-to-feedback with (psi2-2) modulator
 	c = c + 1;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Trial';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
@@ -71,37 +84,93 @@ for r = 1:4
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = ...
 		struct('name','psi2','param',thist.traj_psi_2(ind)-2,'poly',1);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
-
-	% Feedback event with win/lose modulator
+	
+	% Condition: feedback events split win/lose
 	c = c + 1;
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Feedback';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Feedback Win';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
-		thist.T3_FeedbackOnset_fMRIsec(ind);
+		thist.T3_FeedbackOnset_fMRIsec(ind_win);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 1;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = ...
-		struct( ...
-		'name','Lose', ...
-		'param',double(strcmp(thist.Outcome(ind),'Lose')), ...
-		'poly',1 ...
-		);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = struct();
 
-	% Other session-specific regressors and params
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi = {''};
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).regress = ...
-		struct('name', {}, 'val', {});
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi_reg = ...
-		{fullfile(inp.out_dir,['motpar' num2str(r) '.txt'])};
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).hpf = hpf_sec;
+	c = c + 1;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Feedback Lose';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
+		thist.T3_FeedbackOnset_fMRIsec(ind_lose);
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 1;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = struct();
+
+	% Condition: feedback event with win/lose modulator
+	%c = c + 1;
+	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Feedback';
+	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
+	%	thist.T3_FeedbackOnset_fMRIsec(ind);
+	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 1;
+	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
+	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = ...
+	%	struct( ...
+	%	'name','Lose', ...
+	%	'param',double(strcmp(thist.Outcome(ind),'Lose')), ...
+	%	'poly',1 ...
+	%	);
+	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
 	
 end
 
+%% Estimate
 matlabbatch{2}.spm.stats.fmri_est.spmmat = ...
 	fullfile(matlabbatch{1}.spm.stats.fmri_spec.dir,'SPM.mat');
 matlabbatch{2}.spm.stats.fmri_est.write_residuals = 0;
 matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 
-spm_jobman('run',matlabbatch);
 
+%% Contrasts
+%
+% Parameters are
+%   1  Main block
+%   2  psi2 modulator
+%   3  Feedback event (win)
+%   4  Feedback event (lose)
+matlabbatch{3}.spm.stats.con.spmmat = ...
+	matlabbatch{2}.spm.stats.fmri_est.spmmat;
+matlabbatch{3}.spm.stats.con.delete = 1;
+c = 0;
+
+c = c + 1;
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Trial Block';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [1 0 0 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
+
+c = c + 1;
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Psi2 Modulation';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 1 0 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
+
+c = c + 1;
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Feedback Win';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 0 1 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
+
+c = c + 1;
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Feedback Lose';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 0 0 1];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
+
+% Inverse of all existing contrasts since SPM won't show us both sides
+numc = numel(matlabbatch{3}.spm.stats.con.consess);
+for k = 1:numc
+        c = c + 1;
+        matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = ...
+                ['Neg ' matlabbatch{3}.spm.stats.con.consess{c-numc}.tcon.name];
+        matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = ...
+                - matlabbatch{3}.spm.stats.con.consess{c-numc}.tcon.weights;
+        matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
+end
+
+
+%% Save and run
+save(fullfile(inp.out_dir,'spmbatch_first_level_stats_psi2_block.mat'),'matlabbatch')
+spm_jobman('run',matlabbatch);
 
