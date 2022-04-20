@@ -7,6 +7,6 @@ confile = sys.argv[1]
 connum = sys.argv[2]
 
 cons = pandas.read_csv(confile, dtype=str)
-conname = cons.ConName[cons.ConNum==connum][0]
+conname = cons.ConName[cons.ConNum==connum].iloc[0]
 
 print(conname)
