@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-export fmri1_niigz=../INPUTS/fmri1.nii.gz
-export fmri2_niigz=../INPUTS/fmri2.nii.gz
-export fmri3_niigz=../INPUTS/fmri3.nii.gz
-export fmri4_niigz=../INPUTS/fmri4.nii.gz
-export fmritopup_niigz=../INPUTS/fmritopup.nii.gz
-export seg_niigz=../INPUTS/seg.nii.gz
-export icv_niigz=../INPUTS/icv.nii.gz
-export deffwd_niigz=../INPUTS/y_deffwd.nii.gz
-export biascorr_niigz=../INPUTS/biascorr.nii.gz
-export biasnorm_niigz=../INPUTS/biasnorm.nii.gz
-export trialreport_csv=../INPUTS/trialreport.csv
-export out_dir=../OUTPUTS
+export fmri1_niigz=$(pwd)/../INPUTS/fmri1.nii.gz
+export fmri2_niigz=$(pwd)/../INPUTS/fmri2.nii.gz
+export fmri3_niigz=$(pwd)/../INPUTS/fmri3.nii.gz
+export fmri4_niigz=$(pwd)/../INPUTS/fmri4.nii.gz
+export fmritopup_niigz=$(pwd)/../INPUTS/fmritopup.nii.gz
+export seg_niigz=$(pwd)/../INPUTS/seg.nii.gz
+export icv_niigz=$(pwd)/../INPUTS/icv.nii.gz
+export deffwd_niigz=$(pwd)/../INPUTS/y_deffwd.nii.gz
+export biascorr_niigz=$(pwd)/../INPUTS/biascorr.nii.gz
+export biasnorm_niigz=$(pwd)/../INPUTS/biasnorm.nii.gz
+export trialreport_csv=$(pwd)/../INPUTS/trialreport.csv
+export out_dir=$(pwd)/../OUTPUTS
 
 export vox_mm=2
 export hpf_sec=200

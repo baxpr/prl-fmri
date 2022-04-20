@@ -4,7 +4,7 @@ echo Running $(basename "${BASH_SOURCE}")
 
 # Files
 cp "${fmri1_niigz}" "${out_dir}"/fmri1.nii.gz
-cp "${fmri2_niigz}" "${out_dir}"/fmri3.nii.gz
+cp "${fmri2_niigz}" "${out_dir}"/fmri2.nii.gz
 cp "${fmri3_niigz}" "${out_dir}"/fmri3.nii.gz
 cp "${fmri4_niigz}" "${out_dir}"/fmri4.nii.gz
 cp "${fmritopup_niigz}" "${out_dir}"/fmritopup.nii.gz
