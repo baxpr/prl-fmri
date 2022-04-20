@@ -32,7 +32,7 @@ fsleyes render -of mni.png \
 # fMRI contrast image, slices
 spm_dir=spm_psi2_block
 connum=2
-connum0=$(printf "%04d\n" ${connum})
+connum0=$(printf "%04g\n" ${connum})
 conname=$(get_conname.py ${out_dir}/spm_contrast_names_psi2_block.csv ${connum})
 c=10
 for slice in -35 -20 -5 10 25 40 55 70  ; do
