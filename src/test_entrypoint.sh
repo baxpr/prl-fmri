@@ -13,6 +13,7 @@ export biasnorm_niigz=$(pwd)/../INPUTS/biasnorm.nii.gz
 export trialreport_csv=$(pwd)/../INPUTS/trialreport.csv
 export out_dir=$(pwd)/../OUTPUTS
 
+export pedir=+j
 export vox_mm=2
 export hpf_sec=200
 export fwhm_mm=6
