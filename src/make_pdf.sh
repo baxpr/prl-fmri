@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # FIXME Get gm, MNI gm from cat12
-# FIXME Get contrast name (currently $CONNAME)
 
 echo Making PDF
 
