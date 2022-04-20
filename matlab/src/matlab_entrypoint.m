@@ -16,7 +16,7 @@ addOptional(P,'refimg_nii','avg152T1.nii')
 addOptional(P,'biasnorm_nii','/OUTPUTS/biasnorm.nii')
 addOptional(P,'trialreport_csv','/OUTPUTS/trialreport.csv')
 addOptional(P,'hpf_sec','200')
-addOptional(P,'fwhm_mm','5')
+addOptional(P,'fwhm_mm','6')
 addOptional(P,'out_dir','/OUTPUTS');
 parse(P,varargin{:});
 disp(P.Results)

@@ -56,10 +56,7 @@ inp.swfmri3_nii = fullfile(inp.out_dir,['s' n e]);
 [~,n,e] = fileparts(inp.wfmri4_nii);
 inp.swfmri4_nii = fullfile(inp.out_dir,['s' n e]);
 
-% First level stats
-save(fullfile(inp.out_dir,'testvars.mat'),'inp');  % temporary for testing
+% First level stats and contrasts
+save(fullfile(inp.out_dir,'testvars.mat'),'inp');  % for testing
 first_level_stats_psi2_block(inp);
-
-
-% Create contrast images
 
