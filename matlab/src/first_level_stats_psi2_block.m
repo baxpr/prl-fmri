@@ -92,7 +92,8 @@ for r = 1:4
 		thist.T3_FeedbackOnset_fMRIsec(ind_win);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 1;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = struct();
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod = ...
+		struct('name', {}, 'param', {}, 'poly', {});
 
 	c = c + 1;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Feedback Lose';
@@ -100,9 +101,10 @@ for r = 1:4
 		thist.T3_FeedbackOnset_fMRIsec(ind_lose);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = 1;
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1) = struct();
-
-	% Condition: feedback event with win/lose modulator
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod = ...
+		struct('name', {}, 'param', {}, 'poly', {});
+	
+	% Condition: single feedback event with win/lose modulator
 	%c = c + 1;
 	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Feedback';
 	%matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
@@ -170,7 +172,42 @@ for k = 1:numc
 end
 
 
+%% Review design
+matlabbatch{4}.spm.stats.review.spmmat = ...
+	matlabbatch{2}.spm.stats.fmri_est.spmmat;
+matlabbatch{4}.spm.stats.review.display.matrix = 1;
+matlabbatch{4}.spm.stats.review.print = false;
+
+matlabbatch{5}.cfg_basicio.run_ops.call_matlab.inputs{1}.string = ...
+        fullfile(inp.out_dir,'first_level_design_psi2_block.png');
+matlabbatch{5}.cfg_basicio.run_ops.call_matlab.outputs = {};
+matlabbatch{5}.cfg_basicio.run_ops.call_matlab.fun = 'spm_window_print';
+
+
 %% Save and run
 save(fullfile(inp.out_dir,'spmbatch_first_level_stats_psi2_block.mat'),'matlabbatch')
 spm_jobman('run',matlabbatch);
+
+
+%% Results display
+% Needed to create the spmT even if we don't get the figure window
+xSPM = struct( ...
+    'swd', matlabbatch{1}.spm.stats.fmri_spec.dir, ...
+    'title', '', ...
+    'Ic', 1, ...
+    'n', 0, ...
+    'Im', [], ...
+    'pm', [], ...
+    'Ex', [], ...
+    'u', 0.005, ...
+    'k', 10, ...
+    'thresDesc', 'none' ...
+    );
+[hReg,xSPM] = spm_results_ui('Setup',xSPM);
+
+% Show on the subject MNI anat
+spm_sections(xSPM,hReg,inp.biasnorm_nii)
+
+% Jump to global max activation
+spm_mip_ui('Jump',spm_mip_ui('FindMIPax'),'glmax');
 
