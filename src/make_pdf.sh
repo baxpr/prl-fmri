@@ -43,12 +43,12 @@ for slice in -35 -20 -5 10 25 40 55 70  ; do
 		--useNegativeCmap --cmap red-yellow --negativeCmap blue-lightblue
 done
 
-${magick_dir}/montage \
+montage \
 	-mode concatenate ${spm_dir}_????.png \
 	-tile 3x -trim -quality 100 -background black -gravity center \
 	-border 20 -bordercolor black page_${spm_dir}_${connum0}.png
 
-${magick_dir}/convert -size 2600x3365 xc:white \
+convert -size 2600x3365 xc:white \
 	-gravity center \( page_${spm_dir}_${connum0}.png -resize 2400x \) -composite \
 	-gravity North -pointsize 48 -annotate +0+100 \
 	"PRL fMRI, ${spm_dir}, contrast ${connum}: ${conname}" \
@@ -57,7 +57,7 @@ ${magick_dir}/convert -size 2600x3365 xc:white \
 
 
 # Combine
-${magick_dir}/convert -size 2600x3365 xc:white \
+convert -size 2600x3365 xc:white \
 	-gravity center \( coreg.png -geometry '2400x2400+0-0' \) -composite \
 	-gravity center -pointsize 48 -annotate +0-1250 \
 	"T1 gray matter outline on unsmoothed registered mean fMRI (native space)" \
@@ -67,7 +67,7 @@ ${magick_dir}/convert -size 2600x3365 xc:white \
 	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
 	page_reg.png
 
-${magick_dir}/convert \
+convert \
     page_reg.png \
     first_level_design_psi2_block_001.png page_spm_psi2_block_*.png \
     prl-fmri.pdf
