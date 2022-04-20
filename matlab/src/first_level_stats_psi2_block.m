@@ -189,9 +189,23 @@ matlabbatch{5}.cfg_basicio.run_ops.call_matlab.outputs = {};
 matlabbatch{5}.cfg_basicio.run_ops.call_matlab.fun = 'spm_window_print';
 
 
-%% Save and run
+%% Save batch and run
 save(fullfile(inp.out_dir,'spmbatch_first_level_stats_psi2_block.mat'),'matlabbatch')
 spm_jobman('run',matlabbatch);
+
+% And save contrast names
+numc = numel(matlabbatch{3}.spm.stats.con.consess);
+connames = table((1:numc)','VariableNames',{'ConNum'});
+for k = 1:numc
+	try
+		connames.ConName{k,1} = ...
+			matlabbatch{3}.spm.stats.con.consess{k}.tcon.name;
+	catch
+		connames.ConName{k,1} = ...
+			matlabbatch{3}.spm.stats.con.consess{k}.fcon.name;
+	end
+end
+writetable(connames,fullfile(inp.out_dir,'spm_contrast_names_psi2_block.csv'));
 
 
 %% Results display
