@@ -30,31 +30,33 @@ fsleyes render -of mni.png \
 
 # fMRI contrast image, slices
 spm_dir=spm_psi2_block
-connum=2
-connum0=$(printf "%04g\n" ${connum})
-conname=$(get_conname.py ${out_dir}/spm_contrast_names_psi2_block.csv ${connum})
-c=10
-for slice in -35 -20 -5 10 25 40 55 70  ; do
-	((c++))
-	fsleyes render -of ${spm_dir}_${connum0}.png \
-		--scene ortho --worldLoc 0 0 ${slice} --displaySpace world --size 600 600 --yzoom 1000 \
-		--layout horizontal --hideCursor --hideLabels --hidex --hidey \
-		biasnorm --overlayType volume \
-		${spm_dir}/spmT_${connum0} --overlayType volume --displayRange 3 10 \
-		--useNegativeCmap --cmap red-yellow --negativeCmap blue-lightblue
+for connum in 1 2; do
+    connum0=$(printf "%04g\n" ${connum})
+    conname=$(get_conname.py ${out_dir}/spm_contrast_names_psi2_block.csv ${connum})
+    c=10
+    for slice in -35 -20 -5 10 25 40 55 70  ; do
+	    ((c++))
+	    fsleyes render -of ${spm_dir}_${connum0}_${c}.png \
+	        --scene ortho --worldLoc 0 0 ${slice} --displaySpace world --size 600 600 --yzoom 1000 \
+	        --layout horizontal --hideCursor --hideLabels --hidex --hidey \
+		    biasnorm --overlayType volume \
+		    ${spm_dir}/spmT_${connum0} --overlayType volume --displayRange 3 10 \
+		    --useNegativeCmap --cmap red-yellow --negativeCmap blue-lightblue
+    done
+
+    montage \
+	    -mode concatenate ${spm_dir}_${connum0}_??.png \
+	    -tile 3x -quality 100 -background black -gravity center \
+	    -border 20 -bordercolor black ${spm_dir}_${connum0}.png
+
+    convert -size 2600x3365 xc:white \
+	    -gravity center \( ${spm_dir}_${connum0}.png -resize 2400x \) -composite \
+	    -gravity North -pointsize 48 -annotate +0+100 \
+	    "PRL fMRI, ${spm_dir}, contrast ${connum}: ${conname}" \
+	    -gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
+	    page_${spm_dir}_${connum0}.png
+
 done
-
-montage \
-	-mode concatenate ${spm_dir}_????.png \
-	-tile 3x -trim -quality 100 -background black -gravity center \
-	-border 20 -bordercolor black page_${spm_dir}_${connum0}.png
-
-convert -size 2600x3365 xc:white \
-	-gravity center \( page_${spm_dir}_${connum0}.png -resize 2400x \) -composite \
-	-gravity North -pointsize 48 -annotate +0+100 \
-	"PRL fMRI, ${spm_dir}, contrast ${connum}: ${conname}" \
-	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
-	page_${spm_dir}_${connum0}.png
 
 
 # Combine
@@ -69,12 +71,12 @@ convert -size 2600x3365 xc:white \
 	page_reg.png
 
 convert -size 2600x3365 xc:white \
-	-gravity center \( first_level_design_psi2_block_001.png -resize 2400x \) -composite \
+	-gravity center \( first_level_design_psi2_block_001.png -resize 2000x \) -composite \
 	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
-	first_level_design_psi2_block_001.png
+	page_design_psi2_block.png
 
 convert \
     page_reg.png \
-    first_level_design_psi2_block_001.png page_spm_psi2_block_*.png \
+    page_design_psi2_block.png page_spm_psi2_block_*.png \
     prl-fmri.pdf
 
