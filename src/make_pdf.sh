@@ -68,6 +68,11 @@ convert -size 2600x3365 xc:white \
 	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
 	page_reg.png
 
+convert -size 2600x3365 xc:white \
+	-gravity center \( first_level_design_psi2_block_001.png -resize 2400x \) -composite \
+	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
+	first_level_design_psi2_block_001.png
+
 convert \
     page_reg.png \
     first_level_design_psi2_block_001.png page_spm_psi2_block_*.png \
