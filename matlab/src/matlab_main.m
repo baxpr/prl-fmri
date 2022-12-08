@@ -58,5 +58,5 @@ inp.swfmri4_nii = fullfile(inp.out_dir,['s' n e]);
 
 % First level stats and contrasts
 save(fullfile(inp.out_dir,'testvars.mat'),'inp');  % for testing
-first_level_stats_epsi2(inp);
+first_level_stats_D2020(inp);
 

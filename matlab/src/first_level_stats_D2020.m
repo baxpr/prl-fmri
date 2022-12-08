@@ -5,6 +5,7 @@ function first_level_stats_D2020(inp)
 %
 %   Trial from cue to feedback (duration varies)
 %   Non-orthogonalized parametric modulators epsi2 epsi3 psi2 psi3 mu3
+tag = 'D2020';
 
 % Filter param
 hpf_sec = str2double(inp.hpf_sec);
@@ -38,7 +39,7 @@ fprintf('ALERT: USING TR OF %0.3f sec FROM FMRI NIFTI\n',tr)
 %% Design
 clear matlabbatch
 matlabbatch{1}.spm.stats.fmri_spec.dir = ...
-	{fullfile(inp.out_dir,'spm_epsi2')};
+	{fullfile(inp.out_dir,['spm_' tag])};
 matlabbatch{1}.spm.stats.fmri_spec.timing.units = 'secs';
 matlabbatch{1}.spm.stats.fmri_spec.timing.RT = tr;
 matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16;
@@ -165,14 +166,14 @@ matlabbatch{4}.spm.stats.review.display.matrix = 1;
 matlabbatch{4}.spm.stats.review.print = false;
 
 matlabbatch{5}.cfg_basicio.run_ops.call_matlab.inputs{1}.string = ...
-        fullfile(inp.out_dir,'first_level_design_D2020.png');
+        fullfile(inp.out_dir,['first_level_design_' tag '.png']);
 matlabbatch{5}.cfg_basicio.run_ops.call_matlab.outputs = {};
 matlabbatch{5}.cfg_basicio.run_ops.call_matlab.fun = 'spm_window_print';
 end
 
 
 %% Save batch and run
-save(fullfile(inp.out_dir,'spmbatch_first_level_stats_D2020.mat'),'matlabbatch')
+save(fullfile(inp.out_dir,['spmbatch_first_level_stats_' tag '.mat']),'matlabbatch')
 spm_jobman('run',matlabbatch);
 
 % And save contrast names
@@ -187,7 +188,7 @@ for k = 1:numc
 			matlabbatch{3}.spm.stats.con.consess{k}.fcon.name;
 	end
 end
-writetable(connames,fullfile(inp.out_dir,'spm_contrast_names_D2020.csv'));
+writetable(connames,fullfile(inp.out_dir,['spm_contrast_names_' tag '.csv']));
 
 
 %% Results display
