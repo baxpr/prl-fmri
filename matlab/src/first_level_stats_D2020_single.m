@@ -57,7 +57,7 @@ writematrix(mot, fullfile(inp.out_dir,'motpar.txt'))
 imgs = {};
 for r = 1:4
 	for n = 1:nt(r)
-		imgs = [imgs; [inp.('swfmri1_nii') ',' num2str(n)]];
+		imgs = [imgs; [inp.(['swfmri' num2str(r) '_nii']) ',' num2str(n)]];
 	end
 end
 
