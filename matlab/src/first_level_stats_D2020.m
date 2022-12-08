@@ -76,7 +76,7 @@ for r = 1:4
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
 		thist.T1_TrialStart_fMRIsec(ind);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = ...
-		trials.T1_T3_Duration_fMRIsec(ind);
+		thist.T1_T3_Duration_fMRIsec(ind);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).name = 'epsi2';
