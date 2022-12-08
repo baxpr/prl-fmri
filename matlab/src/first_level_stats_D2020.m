@@ -76,7 +76,7 @@ for r = 1:4
 		thist.T1_TrialStart_fMRIsec(ind);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = ...
 		trials.T1_T3_Duration_fMRIsec(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = [];
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).name = 'epsi2';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).param = thist.traj_epsi_2(ind);
@@ -109,42 +109,54 @@ matlabbatch{2}.spm.stats.fmri_est.write_residuals = 0;
 matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 
 
-if 0
 %% Contrasts
 %
-% Parameters are
-%   1  Main block
-%   2  psi2 modulator
-%   3  Feedback event (win)
-%   4  Feedback event (lose)
+% Parameters per session SPM.xX.name' are
+%    {'Sn(1) Cue*bf(1)'        }
+%    {'Sn(1) Cuexepsi2^1*bf(1)'}
+%    {'Sn(1) Cuexepsi3^1*bf(1)'}
+%    {'Sn(1) Cuexpsi2^1*bf(1)' }
+%    {'Sn(1) Cuexpsi3^1*bf(1)' }
+%    {'Sn(1) Cuexmu33^1*bf(1)' }
+%    {'Sn(1) R1'               }
+%    {'Sn(1) R2'               }
+%    {'Sn(1) R3'               }
+%    {'Sn(1) R4'               }
+%    {'Sn(1) R5'               }
+%    {'Sn(1) R6'               }
 matlabbatch{3}.spm.stats.con.spmmat = ...
 	matlabbatch{2}.spm.stats.fmri_est.spmmat;
 matlabbatch{3}.spm.stats.con.delete = 1;
 c = 0;
 
 c = c + 1;
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Trial Block';
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [1 0 0 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Cue';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [1  0 0 0 0 0];
 matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
 
 c = c + 1;
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Psi2 Modulation';
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 1 0 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Epsi2';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0  1 0 0 0 0];
 matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
 
 c = c + 1;
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Feedback Win';
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 0 1 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Epsi3';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0  0 1 0 0 0];
 matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
 
 c = c + 1;
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Feedback Lose';
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 0 0 1];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Psi2';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0  0 0 1 0 0];
 matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
 
 c = c + 1;
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Feedback Win gt Lose';
-matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 0 1 -1];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Psi3';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0  0 0 0 1 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
+
+c = c + 1;
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Mu33';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0  0 0 0 0 1];
 matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
 
 % Inverse of all existing contrasts since SPM won't show us both sides
@@ -167,9 +179,8 @@ matlabbatch{4}.spm.stats.review.print = false;
 
 matlabbatch{5}.cfg_basicio.run_ops.call_matlab.inputs{1}.string = ...
         fullfile(inp.out_dir,['first_level_design_' tag '.png']);
-matlabbatch{5}.cfg_basicio.run_ops.call_matlab.outputs = {};
+matlabbatch{5}.cfg_basicio.run_ops.call_matlab.outputs = cell(1,0);
 matlabbatch{5}.cfg_basicio.run_ops.call_matlab.fun = 'spm_window_print';
-end
 
 
 %% Save batch and run
