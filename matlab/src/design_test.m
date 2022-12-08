@@ -1,5 +1,51 @@
 % Scratchpad for model design
 
+%% Just two trials, different schemes
+
+test_cue_ons = [0 30];
+test_cue_dur = [1 1];
+test_cue_dur = [2.5 7];
+test_fb_ons = test_cue_ons + [2.5 7];
+test_fb_dur = [1 1];
+out_dir = '../../OUTPUTS/spmtest';
+
+% Stats design job
+clear matlabbatch
+matlabbatch{1}.spm.stats.fmri_design.dir = {out_dir};
+matlabbatch{1}.spm.stats.fmri_design.timing.units = 'secs';
+matlabbatch{1}.spm.stats.fmri_design.timing.RT = 1.3;
+matlabbatch{1}.spm.stats.fmri_design.timing.fmri_t = 16;
+matlabbatch{1}.spm.stats.fmri_design.timing.fmri_t0 = 8;
+matlabbatch{1}.spm.stats.fmri_design.sess.nscan = 45;
+
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(1).name = 'Cue';
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(1).onset = test_cue_ons;
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(1).duration = test_cue_dur;
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(1).tmod = [];
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(1).pmod = [];
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(1).orth = 0;
+
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(2).name = 'Feedback';
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(2).onset = test_fb_ons;
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(2).duration = test_fb_dur;
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(2).tmod = [];
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(2).pmod = [];
+matlabbatch{1}.spm.stats.fmri_design.sess.cond(2).orth = 0;
+
+matlabbatch{1}.spm.stats.fmri_design.sess.hpf = 300;
+matlabbatch{1}.spm.stats.fmri_design.fact = struct('name', {}, 'levels', {});
+matlabbatch{1}.spm.stats.fmri_design.bases.hrf.derivs = [0 0];
+matlabbatch{1}.spm.stats.fmri_design.volt = 1;
+matlabbatch{1}.spm.stats.fmri_design.global = 'None';
+matlabbatch{1}.spm.stats.fmri_design.mthresh = -Inf;
+matlabbatch{1}.spm.stats.fmri_design.cvi = 'AR(1)';
+save(fullfile(out_dir,'spmtest_batch.mat'),'matlabbatch');
+spm_jobman('run',matlabbatch)
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Trial by trial stimulus/response data and trajectories, from eprime-3PRL
 info = readtable('../../INPUTS/trialreport.csv');
 
