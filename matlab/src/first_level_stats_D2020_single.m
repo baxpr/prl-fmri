@@ -1,22 +1,18 @@
-function first_level_stats_D2020(inp)
+function first_level_stats_D2020_single(inp)
 
 % Modeling - best effort to follow Deserno 2020
 % https://pubmed.ncbi.nlm.nih.gov/31937449/
 %
 %   Trial from cue to feedback (duration varies)
 %   Non-orthogonalized parametric modulators epsi2 epsi3 psi2 psi3 mu3
-
-tag = 'D2020';
+%
+% Concatenate runs and model as a single "session" for SPM, to avoid
+% possibly different scaling of parametric modulators from one run to the
+% next.
+tag = 'D2020_single';
 
 % Filter param
 hpf_sec = str2double(inp.hpf_sec);
-
-% Save motion params as .mat
-for r = 1:4
-	mot = readtable(inp.(['motpar' num2str(r) '_txt']),'FileType','text');
-	mot = zscore(table2array(mot));
-	writematrix(mot, fullfile(inp.out_dir,['motpar' num2str(r) '.txt']))
-end
 
 % Load trial timing info
 trials = readtable(inp.trialreport_csv);
@@ -36,6 +32,35 @@ for r = 2:4
 end
 fprintf('ALERT: USING TR OF %0.3f sec FROM FMRI NIFTI\n',tr)
 
+% Get number of volumes
+nt = [];
+for r = 1:4
+	N = nifti(inp.(['swfmri' num2str(r) '_nii']));
+	nt(r) = size(N.dat,4);
+end
+
+% Save motion params and per-run mean for 2,3,4 as .mat
+mot = readtable(inp.('motpar1_txt'),'FileType','text');
+mot = zscore(table2array(mot));
+for r = 2:4
+	thismot = readtable(inp.(['motpar' num2str(r) '_txt']),'FileType','text');
+	mot = [mot; zscore(table2array(thismot))];
+end
+perrun = zeros(sum(nt),3);
+perrun(nt(1)+1:sum(nt(1:2)),1) = 1;
+perrun(sum(nt(1:2))+1:sum(nt(1:3)),2) = 1;
+perrun(sum(nt(1:3))+1:sum(nt(1:4)),3) = 1;
+mot = [mot perrun];
+writematrix(mot, fullfile(inp.out_dir,'motpar.txt'))
+
+% Get list of volumes in SPM format
+imgs = {};
+for r = 1:4
+	for n = 1:nt(r)
+		imgs = [imgs; [inp.('swfmri1_nii') ',' num2str(n)]];
+	end
+end
+
 
 %% Design
 clear matlabbatch
@@ -53,55 +78,55 @@ matlabbatch{1}.spm.stats.fmri_spec.mthresh = -Inf;
 matlabbatch{1}.spm.stats.fmri_spec.mask = {[spm('dir') '/tpm/mask_ICV.nii']};
 matlabbatch{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
 
-for r = 1:4
-	
-	% Initialize
-	thist = trials(trials.Run==r,:);
-	ind = ismember(thist.Outcome,{'Win','Lose'});
-	c = 0;
-	
-	% Session-specific scans, regressors, params
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).scans = ...
-		{inp.(['swfmri' num2str(r) '_nii'])};
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi = {''};
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).regress = ...
-		struct('name', {}, 'val', {});
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi_reg = ...
-		{fullfile(inp.out_dir,['motpar' num2str(r) '.txt'])};
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).hpf = hpf_sec;
-	
-	% Condition: Cue
-	c = c + 1;
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Cue';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = ...
-		thist.T1_TrialStart_fMRIsec(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = ...
-		trials.T1_T3_Duration_fMRIsec(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
+% Initialize
+ind = ismember(trials.Outcome,{'Win','Lose'});
+r = 1;
+c = 0;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).name = 'epsi2';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).param = thist.traj_epsi_2(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).poly = 1;
+% Scans, regressors, params
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).scans = imgs;
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi = {''};
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).regress = ...
+	struct('name', {}, 'val', {});
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).multi_reg = ...
+	{fullfile(inp.out_dir,'motpar.txt')};
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).hpf = hpf_sec;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).name = 'epsi3';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).param = thist.traj_epsi_3(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).poly = 1;
+% Condition: Cue
+c = c + 1;
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).name = 'Cue';
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).onset = [...
+	trials.T1_TrialStart_fMRIsec(ind & trials.Run==1); ...
+	trials.T1_TrialStart_fMRIsec(ind & trials.Run==2) + tr*sum(nt(1:1)); ...
+	trials.T1_TrialStart_fMRIsec(ind & trials.Run==3) + tr*sum(nt(1:2)); ...
+	trials.T1_TrialStart_fMRIsec(ind & trials.Run==4) + tr*sum(nt(1:3)) ...
+	];
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).duration = ...
+	trials.T1_T3_Duration_fMRIsec(ind);
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).name = 'psi2';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).param = thist.traj_psi_2(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).poly = 1;
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).name = 'epsi2';
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).param = trials.traj_epsi_2(ind);
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).poly = 1;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).name = 'psi3';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).param = thist.traj_psi_3(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).poly = 1;
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).name = 'epsi3';
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).param = trials.traj_epsi_3(ind);
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).poly = 1;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).name = 'mu33';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).param = thist.traj_mu_33(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).poly = 1;
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).name = 'psi2';
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).param = trials.traj_psi_2(ind);
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).poly = 1;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).name = 'psi3';
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).param = trials.traj_psi_3(ind);
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).poly = 1;
 
-end
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).name = 'mu33';
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).param = trials.traj_mu_33(ind);
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).poly = 1;
+
+matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
+
 
 %% Estimate
 matlabbatch{2}.spm.stats.fmri_est.spmmat = ...
@@ -119,12 +144,6 @@ matlabbatch{2}.spm.stats.fmri_est.method.Classical = 1;
 %    {'Sn(1) Cuexpsi2^1*bf(1)' }
 %    {'Sn(1) Cuexpsi3^1*bf(1)' }
 %    {'Sn(1) Cuexmu33^1*bf(1)' }
-%    {'Sn(1) R1'               }
-%    {'Sn(1) R2'               }
-%    {'Sn(1) R3'               }
-%    {'Sn(1) R4'               }
-%    {'Sn(1) R5'               }
-%    {'Sn(1) R6'               }
 matlabbatch{3}.spm.stats.con.spmmat = ...
 	matlabbatch{2}.spm.stats.fmri_est.spmmat;
 matlabbatch{3}.spm.stats.con.delete = 1;
