@@ -20,9 +20,6 @@ run_spm12.sh "${MATLAB_RUNTIME}" function matlab_entrypoint \
     hpf_sec "${hpf_sec}" \
     fwhm_mm "${fwhm_mm}"
 
-# Postprocessing
-postprocessing.sh
-
 # Freeview-based PDF creation
 make_pdf.sh
 

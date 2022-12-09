@@ -1,18 +1,23 @@
 #!/usr/bin/env bash
-#
-# Postprocessing, done after the other parts of the pipeline are run.
-#
-# For this example, all we do is gzip the output images (required for all
-# Niftis on XNAT), and move the output files around in a way that's friendly to
-# XNAT/DAX.
 
 echo Running $(basename "${BASH_SOURCE}")
 
-# Remove copied inputs that we don't need anymore
-rm "${out_dir}"/img.nii
-rm "${out_dir}"/mask.nii
+cd "${out_dir}"
 
-# The only output of this pipeline is the PDF.
-mkdir "${out_dir}"/PDF
-mv "${out_dir}"/demo.pdf "${out_dir}"/PDF
+# Zip nifti files in SPM outputs
+for d in \
+    spm_cue_orth0 \
+    spm_cue_orth1_epsi2 \
+    spm_cue_orth1_mu33 \
+; do
+    gzip "${d}"/*.nii
+done
+
+# Zip unsmoothed mean fmri
+gzip wctrrfmri_mean_all.nii
+
+# Preprocessed fmri
+mkdir SWFMRI
+cp swctrrfmri?.nii SWFMRI
+gzip SWFMRI/*.nii
 
