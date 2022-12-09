@@ -2,9 +2,6 @@
 
 echo Running $(basename "${BASH_SOURCE}")
 
-# Initialize Freesurfer
-. $FREESURFER_HOME/SetUpFreeSurfer.sh
-
 # Copy inputs to the working directory
 copy_inputs.sh
 
