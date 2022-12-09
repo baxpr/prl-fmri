@@ -1,4 +1,4 @@
-function first_level_stats_D2020_orth1_epsi2(inp)
+function first_level_stats_cue_orth1_epsi2(inp)
 
 % Modeling - best effort to follow Deserno 2020
 % https://pubmed.ncbi.nlm.nih.gov/31937449/
@@ -6,7 +6,7 @@ function first_level_stats_D2020_orth1_epsi2(inp)
 %   Trial from cue to feedback (duration varies)
 %   Non-orthogonalized parametric modulators epsi2 epsi3 psi2 psi3 mu3
 
-tag = 'D2020_orth1_epsi2';
+tag = 'cue_orth1_epsi2';
 
 % Filter param
 hpf_sec = str2double(inp.hpf_sec);

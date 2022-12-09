@@ -1,12 +1,12 @@
-function first_level_stats_D2020_orth0(inp)
+function first_level_stats_cue_orth1_mu33(inp)
 
 % Modeling - best effort to follow Deserno 2020
 % https://pubmed.ncbi.nlm.nih.gov/31937449/
 %
 %   Trial from cue to feedback (duration varies)
-%   Non-orthogonalized parametric modulators epsi2 epsi3 psi2 psi3 mu3
+%   Non-orthogonalized parametric modulators mu3 psi3 psi2 epsi3 epsi2
 
-tag = 'D2020_orth0';
+tag = 'cue_orth1_mu33';
 
 % Filter param
 hpf_sec = str2double(inp.hpf_sec);
@@ -79,27 +79,27 @@ for r = 1:4
 		thist.T1_T3_Duration_fMRIsec(ind);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).tmod = 0;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).name = 'epsi2';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).param = thist.traj_epsi_2(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).poly = 1;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).name = 'epsi2';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).param = thist.traj_epsi_2(ind);
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).poly = 1;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).name = 'epsi3';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).param = thist.traj_epsi_3(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).poly = 1;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).name = 'epsi3';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).param = thist.traj_epsi_3(ind);
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).poly = 1;
 
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).name = 'psi2';
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).param = thist.traj_psi_2(ind);
 	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(3).poly = 1;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).name = 'psi3';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).param = thist.traj_psi_3(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(4).poly = 1;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).name = 'psi3';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).param = thist.traj_psi_3(ind);
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(2).poly = 1;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).name = 'mu33';
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).param = thist.traj_mu_33(ind);
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(5).poly = 1;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).name = 'mu33';
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).param = thist.traj_mu_33(ind);
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).pmod(1).poly = 1;
 
-	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 0;
+	matlabbatch{1}.spm.stats.fmri_spec.sess(r).cond(c).orth = 1;
 
 end
 
