@@ -17,5 +17,6 @@ docker run \
     --trialreport_csv /INPUTS/trialreport.csv \
     --hpf_sec 300 \
     --fwhm_mm 6 \
+    --pedir "+j" \
     --out_dir /OUTPUTS
 
