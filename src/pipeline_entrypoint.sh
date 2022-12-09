@@ -6,7 +6,7 @@ echo Running $(basename "${BASH_SOURCE}")
 
 # Initialize defaults
 export vox_mm=2
-export hpf_sec=200
+export hpf_sec=300
 export fwhm_mm=6
 export refimg_nii=avg152T1.nii
 export out_dir=/OUTPUTS
