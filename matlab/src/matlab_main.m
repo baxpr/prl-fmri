@@ -1,5 +1,7 @@
 function matlab_main(inp)
 
+spm('defaults','fmri')
+
 % Apply cat12 warp
 disp('Warp')
 clear job
