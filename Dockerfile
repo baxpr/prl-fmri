@@ -12,7 +12,7 @@ RUN wget -nv https://ssd.mathworks.com/supportfiles/downloads/R2019b/Release/6/d
      unzip /opt/mcr_installer.zip -d /opt/mcr_installer && \
     /opt/mcr_installer/install -mode silent -agreeToLicense yes && \
     rm -r /opt/mcr_installer /opt/mcr_installer.zip
-   
+
 # Copy the pipeline code
 COPY matlab /opt/prl-fmri/matlab
 COPY src /opt/prl-fmri/src
@@ -24,6 +24,9 @@ ENV MATLAB_RUNTIME=/usr/local/MATLAB/MATLAB_Runtime/v97
 
 # Add pipeline to system path
 ENV PATH /opt/prl-fmri/src:/opt/prl-fmri/matlab/bin:${PATH}
+
+# Matlab executable must be run at build to extract the CTF archive
+RUN run_spm12.sh ${MATLAB_RUNTIME} function quit
 
 # Entrypoint
 ENTRYPOINT ["pipeline_entrypoint.sh"]
