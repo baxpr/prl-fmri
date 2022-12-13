@@ -23,6 +23,8 @@ Parametric modulators of the cue response are included for five parameters of th
 
 The six motion parameters for each run (rotation and translation) are included as confound predictors.
 
+No temporal derivatives of any predictors are included.
+
 # Outputs
 
 Results are output for three different first-level models:
