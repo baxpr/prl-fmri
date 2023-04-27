@@ -142,6 +142,12 @@ matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Feedback x Epsi3';
 matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0 0 0 1];
 matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
 
+c = c + 1;
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.name = 'Cue + Feedback';
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.weights = [0.5 0 0.5 0];
+matlabbatch{3}.spm.stats.con.consess{c}.tcon.sessrep = 'replsc';
+
+
 % Inverse of all existing contrasts since SPM won't show us both sides
 numc = numel(matlabbatch{3}.spm.stats.con.consess);
 for k = 1:numc
