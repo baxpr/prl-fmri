@@ -60,7 +60,8 @@ inp.swfmri4_nii = fullfile(inp.out_dir,['s' n e]);
 
 % First level stats and contrasts
 %save(fullfile(inp.out_dir,'testvars.mat'),'inp');  % for testing
-first_level_stats_cue_orth0(inp);
-first_level_stats_cue_orth1_epsi2(inp);
-first_level_stats_cue_orth1_mu33(inp);
+%first_level_stats_cue_orth0(inp);
+%first_level_stats_cue_orth1_epsi2(inp);
+%first_level_stats_cue_orth1_mu33(inp);
+first_level_stats_cue_mu3_feedback_epsi3_orth1(inp);
 
