@@ -3,7 +3,7 @@
 docker run \
     --mount type=bind,src=`pwd -P`/INPUTS,dst=/INPUTS \
     --mount type=bind,src=`pwd -P`/OUTPUTS,dst=/OUTPUTS \
-    prl-fmri:test \
+    baxterprogers/prl-fmri:v2.0.1 \
     --fmri1_niigz /INPUTS/fmri1.nii.gz \
     --fmri2_niigz /INPUTS/fmri2.nii.gz \
     --fmri3_niigz /INPUTS/fmri3.nii.gz \

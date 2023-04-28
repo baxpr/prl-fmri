@@ -11,7 +11,7 @@ hpf_sec = str2double(inp.hpf_sec);
 % Save motion params as .mat
 for r = 1:4
 	mot = readtable(inp.(['motpar' num2str(r) '_txt']),'FileType','text');
-	mot = zscore(table2array(mot));
+	mot = zscore(table2array(mot(:,1:6)));
 	writematrix(mot, fullfile(inp.out_dir,['motpar' num2str(r) '.txt']))
 end
 
