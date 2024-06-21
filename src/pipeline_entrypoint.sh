@@ -37,6 +37,13 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Flag to run or skip topup
+if [ -z "${fmritopup_niigz}" ]; then
+    export run_topup="no"
+else
+    export run_topup="yes"
+fi
+
 # Run the pipeline in xvfb
 xvfb-run -n $(($$ + 99)) -s '-screen 0 1600x1200x24 -ac +extension GLX' \
     bash pipeline_main.sh

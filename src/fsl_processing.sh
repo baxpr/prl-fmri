@@ -46,9 +46,10 @@ for n in 1 2 3 4; do
     mcflirt -in fmri${n} -meanvol -out rfmri${n} -plots
 done
 
-echo "    Topup run"
-mcflirt -in fmritopup -meanvol -out rfmritopup
-
+if [ "$run_topup" == "yes" ]; then
+    echo "    Topup run"
+    mcflirt -in fmritopup -meanvol -out rfmritopup
+fi
 
 # Alignment between runs and overall mean fmri
 echo "Aligning runs"
@@ -62,8 +63,10 @@ for n in 2 3 4; do
     flirt -applyxfm -init r${n}to1.fslmat -in rfmri${n} -ref rrfmri1_mean_reg -out rrfmri${n}
 done
 
-echo "    Topup run to run 1"
-flirt ${opts} -in rfmritopup_mean_reg -ref rrfmri1_mean_reg -out rrfmritopup_mean_reg
+if [ "$run_topup" == "yes" ]; then
+    echo "    Topup run to run 1"
+    flirt ${opts} -in rfmritopup_mean_reg -ref rrfmri1_mean_reg -out rrfmritopup_mean_reg
+fi
 
 echo "    Computing overall mean"
 fslmaths rrfmri1_mean_reg -add rrfmri2_mean_reg \
@@ -73,8 +76,17 @@ fslmaths rrfmri1_mean_reg -add rrfmri2_mean_reg \
 
 # Run topup. After this, the 'tr' prefix files always contain the data that will be further
 # processed.
-echo "Running TOPUP"
-run_topup.sh "${pedir}" rrfmri_mean_all rrfmritopup_mean_reg rrfmri1 rrfmri2 rrfmri3 rrfmri4
+if [ "$run_topup" == "yes" ]; then
+    echo "Running TOPUP"
+    run_topup.sh "${pedir}" rrfmri_mean_all rrfmritopup_mean_reg rrfmri1 rrfmri2 rrfmri3 rrfmri4
+else
+    echo "Skipping TOPUP"
+    cp rrfmri_mean_all trrfmri_mean_all
+    cp rrfmri1 trrfmri1
+    cp rrfmri2 trrfmri2
+    cp rrfmri3 trrfmri3
+    cp rrfmri4 trrfmri4
+fi
 
 # Register corrected mean fmri to T1. biascorr is the adjusted T1 from cat12, ICV is the 
 # ICV_NATIVE resource from cat12 that is masked to only brain.
@@ -93,6 +105,7 @@ for n in 1 2 3 4; do
 done
 
 # And to the topup image, for reference
-flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.fslmat \
-    -in trrfmritopup_mean_reg -ref biascorr -out ctrrfmritopup_mean_reg
-
+if [ "$run_topup" == "yes" ]; then
+    flirt -applyisoxfm "${vox_mm}" -init ctrrfmri_mean_all.fslmat \
+        -in trrfmritopup_mean_reg -ref biascorr -out ctrrfmritopup_mean_reg
+fi
