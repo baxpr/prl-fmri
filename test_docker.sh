@@ -3,12 +3,12 @@
 docker run \
     --mount type=bind,src=`pwd -P`/INPUTS,dst=/INPUTS \
     --mount type=bind,src=`pwd -P`/OUTPUTS,dst=/OUTPUTS \
-    baxterprogers/prl-fmri:v2.0.1 \
+    baxterprogers/prl-fmri:v2.1.0 \
     --fmri1_niigz /INPUTS/fmri1.nii.gz \
     --fmri2_niigz /INPUTS/fmri2.nii.gz \
     --fmri3_niigz /INPUTS/fmri3.nii.gz \
     --fmri4_niigz /INPUTS/fmri4.nii.gz \
-    --fmritopup_niigz /INPUTS/fmritopup.nii.gz \
+    --fmritopup_niigz "" \
     --seg_niigz /INPUTS/seg.nii.gz \
     --icv_niigz /INPUTS/icv.nii.gz \
     --deffwd_niigz /INPUTS/y_deffwd.nii.gz \
