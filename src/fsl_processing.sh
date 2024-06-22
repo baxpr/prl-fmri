@@ -81,11 +81,11 @@ if [ "$run_topup" == "yes" ]; then
     run_topup.sh "${pedir}" rrfmri_mean_all rrfmritopup_mean_reg rrfmri1 rrfmri2 rrfmri3 rrfmri4
 else
     echo "Skipping TOPUP"
-    cp rrfmri_mean_all trrfmri_mean_all
-    cp rrfmri1 trrfmri1
-    cp rrfmri2 trrfmri2
-    cp rrfmri3 trrfmri3
-    cp rrfmri4 trrfmri4
+    cp rrfmri_mean_all.nii.gz trrfmri_mean_all.nii.gz
+    cp rrfmri1.nii.gz trrfmri1.nii.gz
+    cp rrfmri2.nii.gz trrfmri2.nii.gz
+    cp rrfmri3.nii.gz trrfmri3.nii.gz
+    cp rrfmri4.nii.gz trrfmri4.nii.gz
 fi
 
 # Register corrected mean fmri to T1. biascorr is the adjusted T1 from cat12, ICV is the 
