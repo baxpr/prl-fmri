@@ -5,13 +5,10 @@ echo Running $(basename "${BASH_SOURCE}")
 cd "${out_dir}"
 
 # Zip nifti files in SPM outputs
-for d in \
-    spm_cue_orth0 \
-    spm_cue_orth1_epsi2 \
-    spm_cue_orth1_mu33 \
-    spm_cue_mu3_feedback_epsi3_orth1 \
-; do
-    gzip "${d}"/*.nii
+for d in spm_* ; do
+    if [ -d "${d}" ] ; then
+        gzip "${d}"/*.nii
+    fi
 done
 
 # Zip unsmoothed mean fmri
