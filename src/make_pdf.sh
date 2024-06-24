@@ -29,14 +29,15 @@ fsleyes render -of mni.png \
 
 
 # fMRI contrast image, slices
-spm_dir=spm_cue_mu3_feedback_epsi3_orth1
+spm_dirtag=cue_mu3_feedback_epsi3_orth1
+spm_dir=spm_${spm_dirtag}
 for connum in 1; do
     connum0=$(printf "%04g\n" ${connum})
-    conname=$(get_conname.py ${out_dir}/spm_contrast_names_${spm_dir}.csv ${connum})
+    conname=$(get_conname.py ${out_dir}/spm_contrast_names_${spm_dirtag}.csv ${connum})
     c=10
     for slice in -35 -20 -5 10 25 40 55 70  ; do
 	    ((c++))
-	    fsleyes render -of ${spm_dir}_${connum0}_${c}.png \
+	    fsleyes render -of ${spm_dirtag}_${connum0}_${c}.png \
 	        --scene ortho --worldLoc 0 0 ${slice} --displaySpace world --size 600 600 --yzoom 1000 \
 	        --layout horizontal --hideCursor --hideLabels --hidex --hidey \
 		    biasnorm --overlayType volume \
@@ -45,16 +46,16 @@ for connum in 1; do
     done
 
     montage \
-	    -mode concatenate ${spm_dir}_${connum0}_??.png \
+	    -mode concatenate ${spm_dirtag}_${connum0}_??.png \
 	    -tile 3x -quality 100 -background black -gravity center \
-	    -border 20 -bordercolor black ${spm_dir}_${connum0}.png
+	    -border 20 -bordercolor black ${spm_dirtag}_${connum0}.png
 
     convert -size 2600x3365 xc:white \
-	    -gravity center \( ${spm_dir}_${connum0}.png -resize 2400x \) -composite \
+	    -gravity center \( ${spm_dirtag}_${connum0}.png -resize 2400x \) -composite \
 	    -gravity North -pointsize 48 -annotate +0+100 \
-	    "PRL fMRI, ${spm_dir}, contrast ${connum}: ${conname}" \
+	    "PRL fMRI, ${spm_dirtag}, contrast ${connum}: ${conname}" \
 	    -gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
-	    page_${spm_dir}_${connum0}.png
+	    page_${spm_dirtag}_${connum0}.png
 
 done
 
@@ -71,12 +72,12 @@ convert -size 2600x3365 xc:white \
 	page_reg.png
 
 convert -size 2600x3365 xc:white \
-	-gravity center \( first_level_design_${spm_dir}_001.png -resize 2000x \) -composite \
+	-gravity center \( first_level_design_${spm_dirtag}_001.png -resize 2000x \) -composite \
 	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
-	page_design_${spm_dir}.png
+	page_design_${spm_dirtag}.png
 
 convert \
     page_reg.png \
-    page_design_${spm_dir}.png page_spm_${spm_dir}*.png \
+    page_design_${spm_dirtag}.png page_${spm_dirtag}*.png \
     prl-fmri.pdf
 
