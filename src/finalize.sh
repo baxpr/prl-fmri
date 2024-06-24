@@ -6,7 +6,9 @@ cd "${out_dir}"
 
 # Zip nifti files in SPM outputs
 for d in spm_* ; do
-    gzip "${d}"/*.nii
+    if [ -d "${d}" ] ; then
+        gzip "${d}"/*.nii
+    fi
 done
 
 # Zip unsmoothed mean fmri
