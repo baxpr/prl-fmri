@@ -29,10 +29,10 @@ fsleyes render -of mni.png \
 
 
 # fMRI contrast image, slices
-spm_dir=spm_cue_orth1_epsi2
+spm_dir=spm_cue_mu3_feedback_epsi3_orth1
 for connum in 1; do
     connum0=$(printf "%04g\n" ${connum})
-    conname=$(get_conname.py ${out_dir}/spm_contrast_names_cue_orth1_epsi2.csv ${connum})
+    conname=$(get_conname.py ${out_dir}/spm_contrast_names_${spm_dir}.csv ${connum})
     c=10
     for slice in -35 -20 -5 10 25 40 55 70  ; do
 	    ((c++))
@@ -71,12 +71,12 @@ convert -size 2600x3365 xc:white \
 	page_reg.png
 
 convert -size 2600x3365 xc:white \
-	-gravity center \( first_level_design_cue_orth1_epsi2_001.png -resize 2000x \) -composite \
+	-gravity center \( first_level_design_${spm_dir}_001.png -resize 2000x \) -composite \
 	-gravity SouthEast -pointsize 48 -annotate +100+100 "${thedate}" \
-	page_design_cue_orth1_epsi2.png
+	page_design_${spm_dir}.png
 
 convert \
     page_reg.png \
-    page_design_cue_orth1_epsi2.png page_spm_cue_orth1_epsi2_*.png \
+    page_design_${spm_dir}.png page_spm_${spm_dir}*.png \
     prl-fmri.pdf
 
