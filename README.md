@@ -17,9 +17,7 @@
 - Warp to MNI space and smooth (SPM)
 - First-level statistical analysis (SPM)
 
-The cue event is modeled for each trial, with onset at the presentation of the cue and offset at the presentation of feedback. This duration varies from trial to trial.
-
-Parametric modulators of the cue response are included for five parameters of the fitted behavioral model: epsilon2, epsilon3, psi2, psi3, mu33.
+The cue and feedback events are modeled for each trial, with a fixed duration.
 
 The six motion parameters for each run (rotation and translation) are included as confound predictors.
 
@@ -27,13 +25,9 @@ No temporal derivatives of any predictors are included.
 
 # Outputs
 
-Results are output for three different first-level models:
+[UPDATED for v2.1.0] Results are output for a single first-level model:
 
-- `spm_cue_orth0` Parametric modulators are not orthogonalized (this follows Deserno 2020). The cue response is not interpretable due to collinearity with parametric modulators. The mu33 result shows variance that is explainable by mu33, but not explainable by cue or other modulators.
-
-- `spm_cue_orth1_epsi2` Parametric modulators are orthogonalized with respect to cue and to each other in the order epsilon2, epsilon3, psi2, psi3, mu33. The cue response is interpretable as amplitude at a fixed value of the modulators. The mu3 response is the same as for `spm_cue_orth0`.
-
-- `spm_cue_orth1_mu33` Parametric modulators are orthogonalized in the order mu33, psi3, psi2, epsilon3, epsilon2. The cue response is interpretable at a fixed value of the modulators. The mu33 response shows variance that is not explainable by the cue response (only).
+- `cue_mu3_feedback_epsi3_orth1` Cue appearance and feedback appearance are each modeled as individual fixed-duration events. A parametric effect of the mu3 parameter on cue response amplitude is modeled. A parametric effect of the epsilon3 parameter on feedback response amplitude is modeled. The parametric modulation terms are orthogonalized with respect to the primary predictor.
 
 
 # References
